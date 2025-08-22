@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Recipe Finder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header>
+    <h1>🍽 Recipe Finder</h1>
+    <p class="subtitle-neon">
+      Find delicious recipes based on the ingredients you have at home!
+    </p>
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f9d1-200d-1f373.png" alt="Chef Hat" />
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f373.png" alt="Frying Pan" />
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f372.png" alt="Cooking Pot" />
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f374.png" alt="Fork and Knife" />
+  </header>
+
+  <main>
+    <form method="POST" action="/">
+      <input type="text" name="ingredients" placeholder="Enter ingredients (comma separated)" />
+      <button type="submit">Find Recipes</button>
+    </form>
+
+    <div class="extra-buttons">
+      <button onclick="location.href='/hot-meals'">🔥 Trend Recipes</button>
+      <button onclick="location.href='/ideas'">💡 Meal Ideas</button>
+      <button onclick="location.href='/inspire-me'">🌟 Inspire Me</button>
+    </div>
+
+    {% if recipes %}
+      <h2>Results:</h2>
+      <div class="recipes">
+        {% for r in recipes %}
+        <div class="card">
+          <h3>{{ r.name }}</h3>
+          <img src="{{ r.image }}" alt="{{ r.name }}" width="200" />
+          <p>{{ r.description or '' }}</p>
+          <div class="card-footer">
+            <a href="{{ url_for('recipe', meal_id=r.idMeal) }}">View Full Recipe</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% elif no_results %}
+      <p style="color: #ff6b6b; font-weight: bold; margin-top: 20px">
+        No exact matches found. Try fewer or more common ingredients!
+      </p>
+    {% else %}
+      <h2>✨ Featured Recipes</h2>
+      <div class="recipes">
+        {% for r in random_recipes %}
+        <div class="card">
+          <h3>{{ r.name }}</h3>
+          <img src="{{ r.image }}" alt="{{ r.name }}" width="200" />
+          <div class="card-footer">
+            <a href="{{ url_for('recipe', meal_id=r.idMeal) }}">View Full Recipe</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </main>
+</body>
+</html>

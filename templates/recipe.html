@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ meal.strMeal }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <a href="{{ url_for('index') }}">⬅ Back to search</a>
+  
+  <h1>{{ meal.strMeal }}</h1>
+  <img src="{{ meal.strMealThumb }}" width="300">
+
+  <p><b>Category:</b> {{ meal.strCategory }} | <b>Area:</b> {{ meal.strArea }}</p>
+
+  <h3>Ingredients:</h3>
+  <ul>
+    {% for i in range(1, 21) %}
+      {% set ingredient = meal['strIngredient' + i|string] %}
+      {% set measure = meal['strMeasure' + i|string] %}
+      {% if ingredient and ingredient.strip() %}
+        <li>{{ measure }} {{ ingredient }}</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h3>Instructions:</h3>
+  <p>{{ meal.strInstructions }}</p>
+</body>
+</html>
