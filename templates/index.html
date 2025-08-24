@@ -54,8 +54,9 @@
         <div class="card">
           <h3>{{ r.name }}</h3>
           <img src="{{ r.image }}" alt="{{ r.name }}" width="200" />
+          <p>{{ r.description or '' }}</p>
           <div class="card-footer">
-            <a href="{{ url_for('recipe', meal_id=r.idMeal) }}">View Full Recipe</a>
+            <a href="{{ url_for('recipe', meal_id=r.idMeal) }}" class="view-recipe">View Full Recipe</a>
           </div>
         </div>
         {% endfor %}

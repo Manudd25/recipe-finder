@@ -167,6 +167,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-between; 
+  align-items: center;
   height: 100%;
   background: linear-gradient(135deg, var(--glass-1) 0%, var(--glass-2) 100%);
   border: 1px solid var(--border);
@@ -177,18 +178,20 @@ button:hover {
   width: 300px;
   text-align: left;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 
 .card-footer a {
   display: inline-block;
-  margin-top: 0.25rem;
+  margin-top: auto;
   padding: 0.55rem 0.9rem;
   border-radius: 10px;
   background: linear-gradient(135deg, rgba(0, 255, 255, 0.12), rgba(0, 255, 255, 0.06));
   color: var(--ink);
   text-decoration: none;
   font-weight: 600;
+  text-align: center;
   transition: transform 0.18s ease, box-shadow 0.25s ease, color 0.2s ease;
 }
 .card-footer a:hover {

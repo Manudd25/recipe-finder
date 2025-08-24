@@ -78,39 +78,44 @@ def map_meals_to_cards(meals):
     return cards
 
 def search_recipes(user_input: str):
-    raw_parts = [p for p in (user_input or "").split(",") if p.strip()]
+    """
+    1) Try exact multi-ingredient match
+    2) If none, fallback to fuzzy union (synonyms, single ingredients)
+    """
+    raw_parts = [p.strip() for p in (user_input or "").split(",") if p.strip()]
     if not raw_parts:
         return []
 
     normalized = [normalize_ingredient(p) for p in raw_parts]
 
+    # --- (1) Exact multi-ingredient match (all ingredients together)
     exact = api_get("filter.php", params={"i": ",".join(normalized)}).get("meals") or []
     if exact:
         return map_meals_to_cards(exact)
 
+    # --- (2) Fallback: fuzzy / single ingredient matches
     expanded_terms = {base: SYNONYMS.get(base, [base]) for base in normalized}
 
-    score = {}
-    meal_cache = {}
+    score = {}       # meal_id -> number of matched base ingredients
+    meal_cache = {}  # meal_id -> meal info
 
     for base, terms in expanded_terms.items():
-        matched_meals_for_base = set()
         for t in terms:
             meals = api_get("filter.php", params={"i": t}).get("meals") or []
             for m in meals:
                 mid = m.get("idMeal")
                 if not mid:
                     continue
-                matched_meals_for_base.add(mid)
                 meal_cache[mid] = m
-        for mid in matched_meals_for_base:
-            score.setdefault(mid, set()).add(base)
+                score.setdefault(mid, set()).add(base)
 
     if not score:
         return []
 
+    # --- prioritize meals that match the most user ingredients
     ranked_ids = sorted(score.keys(), key=lambda k: (-len(score[k]), meal_cache[k].get("strMeal", "")))
     ranked_meals = [meal_cache[mid] for mid in ranked_ids]
+
     return map_meals_to_cards(ranked_meals)
 
 # --- Routes ----------------------------------------------------------------
