@@ -24,6 +24,8 @@ If not, you’ll still get creative ideas with recipes containing at least one o
 - 🌐 **Flask** – web framework  
 - 🎨 **Jinja2** – template rendering  
 - 💻 **HTML, CSS, JavaScript** – frontend  
-- 🍲 **TheMealDB API** – recipe data  
+- 🍲 **TheMealDB API** – recipe data
+
+Try it here: https://recipe-finder-timetocook.azurewebsites.net/ 
 
 <img width="1470" height="956" alt="image" src="https://github.com/user-attachments/assets/bff2f1c6-9133-42fd-80ac-921446660361" />
