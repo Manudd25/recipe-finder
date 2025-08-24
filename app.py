@@ -2,21 +2,21 @@ from flask import Flask, render_template, request, redirect, url_for
 import requests
 import os
 import random
-from dotenv import load_dotenv
 
-load_dotenv()
-
+# --- Initialize app ---
 app = Flask(__name__)
 
-# Use your V2 base from .env (e.g. https://www.themealdb.com/api/json/v2/65232507/)
+# --- Environment variables (from Azure App Settings) ---
 BASE_URL = os.getenv("BASE_URL", "https://www.themealdb.com/api/json/v1/1/")
 if not BASE_URL.endswith("/"):
     BASE_URL += "/"
 
+API_KEY = os.getenv("API_KEY")  # if needed for API requests
+
 # --- Helpers ---------------------------------------------------------------
 
 def api_get(path, params=None):
-    """GET wrapper that builds a full API URL and returns parsed JSON (or {})."""
+    """GET wrapper that builds full API URL and returns parsed JSON (or {})."""
     try:
         resp = requests.get(f"{BASE_URL}{path}", params=params, timeout=12)
         resp.raise_for_status()
@@ -78,17 +78,13 @@ def map_meals_to_cards(meals):
     return cards
 
 def search_recipes(user_input: str):
-    """
-    1) Try exact multi-ingredient match
-    2) If none, fallback to fuzzy union (synonyms, single ingredients)
-    """
     raw_parts = [p.strip() for p in (user_input or "").split(",") if p.strip()]
     if not raw_parts:
         return []
 
     normalized = [normalize_ingredient(p) for p in raw_parts]
 
-    # --- (1) Exact multi-ingredient match (all ingredients together)
+    # --- (1) Exact multi-ingredient match
     exact = api_get("filter.php", params={"i": ",".join(normalized)}).get("meals") or []
     if exact:
         return map_meals_to_cards(exact)
@@ -112,7 +108,7 @@ def search_recipes(user_input: str):
     if not score:
         return []
 
-    # --- prioritize meals that match the most user ingredients
+    # --- prioritize meals matching most ingredients
     ranked_ids = sorted(score.keys(), key=lambda k: (-len(score[k]), meal_cache[k].get("strMeal", "")))
     ranked_meals = [meal_cache[mid] for mid in ranked_ids]
 
@@ -181,5 +177,7 @@ def recipe(meal_id):
         return redirect(url_for("index"))
     return render_template("recipe.html", meal=meal)
 
+# --- Run app locally ---
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
